@@ -1,59 +1,96 @@
-# Test program using accounts
-# Version 3 using a dictionary of accounts
+# Interactive test program creating a dictionary of accounts
+# Version 4, with an interactive menu
 
-# Bring in all the code from the Account class file
 from account import *
 
 accountsDict = {}
 nextAccountNumber = 0
 
-# Create two accounts:
+# Build some starting accounts for testing
 oAccount = Account('Joe', 100, 'JoesPassword')
-joesAccountNumber = nextAccountNumber
-accountsDict[joesAccountNumber] = oAccount
-print('Account number for Joe is:', joesAccountNumber)
+accountsDict[nextAccountNumber] = oAccount
+print('Account number for Joe is:', nextAccountNumber)
+# increment the account number after assignment
 nextAccountNumber = nextAccountNumber + 1
 
 oAccount = Account('Mary', 12345, 'MarysPassword')
-marysAccountNumber = nextAccountNumber
-accountsDict[marysAccountNumber] = oAccount
-print('Account number for Mary is:', marysAccountNumber)
+accountsDict[nextAccountNumber] = oAccount
+print('Account number for Mary is:', nextAccountNumber)
 nextAccountNumber = nextAccountNumber + 1
 
-accountsDict[joesAccountNumber].show()
-accountsDict[marysAccountNumber].show()
-print()
+while True:
+    print()
+    print('Press b to get the balance')
+    print('Press d to make a deposit')
+    print('Press o to open a new account')
+    print('Press w to make a withdrawal')
+    print('Press s to show all accounts')
+    print('Press q to quit')
+    print()
 
-# Call some methods on the different accounts
-print('Calling methods of the two accounts ...')
-accountsDict[joesAccountNumber].deposit(50, 'JoesPassword')
-accountsDict[marysAccountNumber].withdraw(345, 'MarysPassword')
-accountsDict[marysAccountNumber].deposit(100, 'MarysPassword')
+    action = input('What do you want to do? ')
+    action = action.lower()
+    action = action[0]  # grab the first letter
+    print()
+    
+    if action == 'b':
+        print('*** Get Balance ***')
+        userAccountNumber = input('Please enter your account number: ')
+        userAccountNumber = int(userAccountNumber)
+        userAccountPassword = input('Please enter the password: ')
+        oAccount = accountsDict[userAccountNumber]
+        theBalance = oAccount.getBalance(userAccountPassword)
+        if theBalance is not None:
+            print('Your balance is:', theBalance)
 
-# Show the accounts
-accountsDict[joesAccountNumber].show()
-accountsDict[marysAccountNumber].show()
+    elif action == 'd':
+        print('*** Deposit ***')
+        userAccountNumber = input('Please enter the account number: ')
+        userAccountNumber = int(userAccountNumber)
+        userDepositAmount = input('Please enter amount to deposit: ')
+        userDepositAmount = int(userDepositAmount)
+        userPassword = input('Please enter the password: ')
+        oAccount = accountsDict[userAccountNumber]
+        theBalance = oAccount.deposit(userDepositAmount, userPassword)
+        if theBalance is not None:
+            print('Your new balance is:', theBalance)
+        
+    elif action == 'o':
+        print('*** Open Account ***')
+        userName = input('What is the name for the new user account? ')
+        userStartingAmount = input('What is the starting balance for this account? ')
+        userStartingAmount = int(userStartingAmount)
+        userPassword = input('What is the password you want to use for this account? ')
+        oAccount = Account(userName, userStartingAmount, userPassword)
+        accountsDict[nextAccountNumber] = oAccount
+        print('Your new account number is:', nextAccountNumber)
+        nextAccountNumber = nextAccountNumber + 1
+        print()
 
-# Create another account with information from the user
-print()
-userName = input('What is the name for the new user account? ')
-userBalance = input('What is the starting balance for this account? ')
-userBalance = int(userBalance)
-userPassword = input('What is the password you want to use for this account? ')
-oAccount = Account(userName, userBalance, userPassword)
-newAccountNumber = nextAccountNumber
-accountsDict[newAccountNumber] = oAccount
-print('Account number for new account is:', newAccountNumber)
-nextAccountNumber = nextAccountNumber + 1
+    elif action == 's':
+        print('Show:')
+        for userAccountNumber in accountsDict:
+            oAccount = accountsDict[userAccountNumber]
+            print('   Account number:', userAccountNumber)
+            oAccount.show()#userAccountNumber)
 
-# Show the newly created user account
-accountsDict[newAccountNumber].show()
+    elif action == 'q':
+        break
 
-# Let's deposit 100 into the new account
-accountsDict[newAccountNumber].deposit(100, userPassword)
-usersBalance = accountsDict[newAccountNumber].getBalance(userPassword)
-print()
-print("After depositing 100, user's balance is:", usersBalance)
+    elif action == 'w':
+        print('*** Withdraw ***')
+        userAccountNumber = input('Please enter your account number: ')
+        userAccountNumber = int(userAccountNumber)
+        userWithdrawalAmount = input('Please enter the amount to withdraw: ')
+        userWithdrawalAmount = int(userWithdrawalAmount)
+        userPassword = input('Please enter the password: ')
+        oAccount = accountsDict[userAccountNumber]
+        theBalance = oAccount.withdraw(userWithdrawalAmount, userPassword)
+        if theBalance is not None:
+            print('Withdrew:', userWithdrawalAmount)
+            print('Your new balance is:', theBalance)
 
-# Show the new account
-accountsDict[newAccountNumber].show()
+    else:
+        print('Sorry, that was not a valid action.  Please try again.')
+
+print('Done')
