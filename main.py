@@ -1,67 +1,68 @@
 # Non-OOP Bank
-# Version 4
-# Any number of accounts - with lists
+# Version 5
+# Any number of accounts - with a list of dictionaries
 
-accountNamesList = []
-accountBalancesList = []
-accountPasswordsList = []
+accountsList = []
 
-def newAccount(name, balance, password):
-    global accountNamesList, accountBalancesList, accountPasswordsList
-    accountNamesList.append(name)
-    accountBalancesList.append(balance)
-    accountPasswordsList.append(password)
+def newAccount(aName, aBalance, aPassword):
+    global accountsList
+    newAccountDict = {'name':aName, 'balance':aBalance, 'password':aPassword}
+    accountsList.append(newAccountDict)
    
 def show(accountNumber):
-    global accountNamesList, accountBalancesList, accountPasswordsList
+    global accountsList
     print('Account', accountNumber)
-    print('       Name', accountNamesList[accountNumber])
-    print('       Balance:', accountBalancesList[accountNumber])
-    print('       Password:', accountPasswordsList[accountNumber])
+    thisAccountDict = accountsList[accountNumber]
+    print('       Name', thisAccountDict['name'])
+    print('       Balance:', thisAccountDict['balance'])
+    print('       Password:', thisAccountDict['password'])
     print()
 
 def getBalance(accountNumber, password):
-    global accountNamesList, accountBalancesList, accountPasswordsList
-    if password != accountPasswordsList[accountNumber]:
+    global accountsList
+    thisAccountDict = accountsList[accountNumber]
+    if password != thisAccountDict['password']:
         print('Incorrect password')
         return None
-    return accountBalancesList[accountNumber]
+    return thisAccountDict['balance']
 
 def deposit(accountNumber, amountToDeposit, password):
-    global accountNamesList, accountBalancesList, accountPasswordsList
+    global accountsList
+    thisAccountDict = accountsList[accountNumber]
     if amountToDeposit < 0:
         print('You cannot deposit a negative amount!')
         return None
         
-    if password != accountPasswordsList[accountNumber]:
+    if password != thisAccountDict['password']:
         print('Incorrect password')
         return None
     
-    accountBalancesList[accountNumber] = accountBalancesList[accountNumber] + amountToDeposit
-    return accountBalancesList[accountNumber]
+    thisAccountDict['balance'] = thisAccountDict['balance'] + amountToDeposit
+    return thisAccountDict['balance']
     
 def withdraw(accountNumber, amountToWithdraw, password):
-    global accountNamesList, accountBalancesList, accountPasswordsList
+    global accountsList
+    thisAccountDict = accountsList[accountNumber]
     if amountToWithdraw < 0:
         print('You cannot withdraw a negative amount')
         return None
 
-    if password != accountPasswordsList[accountNumber]:
+    if password != thisAccountDict['password']:
         print('Incorrect password for this account')
         return None
 
-    if amountToWithdraw > accountBalancesList[accountNumber]:
+    if amountToWithdraw > thisAccountDict['balance']:
         print('You cannot withdraw more than you have in your account')
         return None
 
-    accountBalancesList[accountNumber] = accountBalancesList[accountNumber] - amountToWithdraw
-    return accountBalancesList[accountNumber]
+    thisAccountDict['balance'] = thisAccountDict['balance'] - amountToWithdraw
+    return thisAccountDict['balance']
 
 # Create two sample accounts
-print("Joe's account is account number:", len(accountNamesList))
+print("Joe's account is account number:", len(accountsList))
 newAccount("Joe", 100, 'soup')
 
-print("Mary's account is account number:", len(accountNamesList))
+print("Mary's account is account number:", len(accountsList))
 newAccount("Mary", 12345, 'nuts')
 
 while True:
@@ -107,13 +108,13 @@ while True:
         userStartingAmount = int(userStartingAmount)
         userPassword = input('What password would you like to use for this account? ')
 
-        userAccountNumber = len(accountNamesList)
+        userAccountNumber = len(accountsList)
         newAccount(userName, userStartingAmount, userPassword)
         print('Your new account number is:', userAccountNumber)
 
     elif action == 's':   #show all
         print('Show:')
-        nAccounts = len(accountNamesList)
+        nAccounts = len(accountsList)
         for accountNumber in range(0, nAccounts):
             show(accountNumber)
 
