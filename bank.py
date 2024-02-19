@@ -1,96 +1,90 @@
-# Interactive test program creating a dictionary of accounts
-# Version 4, with an interactive menu
+# Bank that manages a dictionary of Account objects
 
 from account import *
 
-accountsDict = {}
-nextAccountNumber = 0
+class Bank():
 
-# Build some starting accounts for testing
-oAccount = Account('Joe', 100, 'JoesPassword')
-accountsDict[nextAccountNumber] = oAccount
-print('Account number for Joe is:', nextAccountNumber)
-# increment the account number after assignment
-nextAccountNumber = nextAccountNumber + 1
+    def __init__(self):
+        self.accountsDict = {}
+        self.nextAccountNumber = 0
 
-oAccount = Account('Mary', 12345, 'MarysPassword')
-accountsDict[nextAccountNumber] = oAccount
-print('Account number for Mary is:', nextAccountNumber)
-nextAccountNumber = nextAccountNumber + 1
+    def createAccount(self, theName, theStartingAmount, thePassword):
+        oAccount = Account(theName, theStartingAmount, thePassword)
+        newAccountNumber = self.nextAccountNumber
+        self.accountsDict[newAccountNumber] = oAccount
+        # Increment to prepare for next account to be created
+        self.nextAccountNumber = self.nextAccountNumber + 1
+        return newAccountNumber
 
-while True:
-    print()
-    print('Press b to get the balance')
-    print('Press d to make a deposit')
-    print('Press o to open a new account')
-    print('Press w to make a withdrawal')
-    print('Press s to show all accounts')
-    print('Press q to quit')
-    print()
-
-    action = input('What do you want to do? ')
-    action = action.lower()
-    action = action[0]  # grab the first letter
-    print()
-    
-    if action == 'b':
-        print('*** Get Balance ***')
-        userAccountNumber = input('Please enter your account number: ')
-        userAccountNumber = int(userAccountNumber)
-        userAccountPassword = input('Please enter the password: ')
-        oAccount = accountsDict[userAccountNumber]
-        theBalance = oAccount.getBalance(userAccountPassword)
-        if theBalance is not None:
-            print('Your balance is:', theBalance)
-
-    elif action == 'd':
-        print('*** Deposit ***')
-        userAccountNumber = input('Please enter the account number: ')
-        userAccountNumber = int(userAccountNumber)
-        userDepositAmount = input('Please enter amount to deposit: ')
-        userDepositAmount = int(userDepositAmount)
-        userPassword = input('Please enter the password: ')
-        oAccount = accountsDict[userAccountNumber]
-        theBalance = oAccount.deposit(userDepositAmount, userPassword)
-        if theBalance is not None:
-            print('Your new balance is:', theBalance)
-        
-    elif action == 'o':
+    def openAccount(self):
         print('*** Open Account ***')
         userName = input('What is the name for the new user account? ')
         userStartingAmount = input('What is the starting balance for this account? ')
         userStartingAmount = int(userStartingAmount)
-        userPassword = input('What is the password you want to use for this account? ')
-        oAccount = Account(userName, userStartingAmount, userPassword)
-        accountsDict[nextAccountNumber] = oAccount
-        print('Your new account number is:', nextAccountNumber)
-        nextAccountNumber = nextAccountNumber + 1
+        userPassword = input('What password would you want to use for this account? ')
+
+        userAccountNumber = self.createAccount(userName, userStartingAmount, userPassword)
+        print('Your new account number is:', userAccountNumber)
         print()
 
-    elif action == 's':
-        print('Show:')
-        for userAccountNumber in accountsDict:
-            oAccount = accountsDict[userAccountNumber]
+    def closeAccount(self):
+        print('*** Close Account ***')
+        userAccountNumber = input('What is your account number? ')
+        userAccountNumber = int(userAccountNumber)
+        userPassword = input('What is your password? ')
+        oAccount = self.accountsDict[userAccountNumber]
+        theBalance = oAccount.getBalance(userPassword)
+
+        if theBalance is not None:
+            print('You had', theBalance, 'in your account, which is being returned to you.')
+            # Remove user's account from the dictioary of accounts
+            del self.accountsDict[userAccountNumber]
+            print('Your account is now closed.')
+
+    def balance(self):
+        print('*** Get Balance ***')
+        userAccountNumber = input('Please enter your account number: ')
+        userAccountNumber = int(userAccountNumber)
+        userAccountPassword = input('Please enter the password: ')
+        oAccount = self.accountsDict[userAccountNumber]
+        theBalance = oAccount.getBalance(userAccountPassword)
+        if theBalance is not None:
+            print('Your balance is:', theBalance)
+
+    def deposit(self):
+        print('*** Deposit ***')
+        accountNum = input('Please enter the account number: ')
+        accountNum = int(accountNum)
+        depositAmount = input('Please enter amount to deposit: ')
+        depositAmount = int(depositAmount)
+        userAccountPassword = input('Please enter the password: ')
+        oAccount = self.accountsDict[accountNum]        
+        theBalance = oAccount.deposit(depositAmount, userAccountPassword)
+        if theBalance is not None:
+            print('Your new balance is:', theBalance)
+
+    def show(self):
+        print('*** Show ***')
+        for userAccountNumber in self.accountsDict:
+            oAccount = self.accountsDict[userAccountNumber]
             print('   Account number:', userAccountNumber)
-            oAccount.show()#userAccountNumber)
+            oAccount.show()
 
-    elif action == 'q':
-        break
-
-    elif action == 'w':
+    def withdraw(self):
         print('*** Withdraw ***')
         userAccountNumber = input('Please enter your account number: ')
         userAccountNumber = int(userAccountNumber)
-        userWithdrawalAmount = input('Please enter the amount to withdraw: ')
-        userWithdrawalAmount = int(userWithdrawalAmount)
-        userPassword = input('Please enter the password: ')
-        oAccount = accountsDict[userAccountNumber]
-        theBalance = oAccount.withdraw(userWithdrawalAmount, userPassword)
+        userAmount = input('Please enter the amount to withdraw: ')
+        userAmount = int(userAmount)
+        userAccountPassword = input('Please enter the password: ')
+        oAccount = self.accountsDict[userAccountNumber]
+        theBalance = oAccount.withdraw(userAmount, userAccountPassword)
         if theBalance is not None:
-            print('Withdrew:', userWithdrawalAmount)
+            print('Withdrew:', userAmount)
             print('Your new balance is:', theBalance)
 
-    else:
-        print('Sorry, that was not a valid action.  Please try again.')
-
-print('Done')
+    def bankInfo(self):
+        print('Hours: 9 to 5')
+        print('Address: 123 Main Street, Anytown, USA')
+        print('Phone:  (650) 555-1212')
+        print('We currently have', len(self.accountsDict), 'account(s) open.')
